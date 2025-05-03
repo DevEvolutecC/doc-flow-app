@@ -1,4 +1,5 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
+import { docToJson } from "../functions/doc-to-json/resource";
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -7,6 +8,11 @@ specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
+  docToJson: a
+    .query()
+    .returns(a.string())
+    .authorization(allow => [allow.guest()])
+    .handler(a.handler.function(docToJson)),
   Todo: a
     .model({
       content: a.string(),
