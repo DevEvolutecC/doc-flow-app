@@ -39,10 +39,9 @@ function Dashboard() {
   console.log(files)
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="flex flex-col min-h-screen">
+    <SidebarProvider className="w-full">
+      <SidebarInset className="w-full">
+        <div className="flex flex-col min-h-screen w-full">
           <header className="border-b">
             <div className="flex h-16 items-center px-4">
               <h1 className="text-xl font-semibold">Dashboard</h1>

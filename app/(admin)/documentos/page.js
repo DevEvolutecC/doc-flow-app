@@ -5,7 +5,7 @@ import Dashboard from "../../../components/dashboard/dashboard";  // O cualquier
 export default function Page() {
   return (
     <div>
-      <Dashboard />
+      <h1 className="text-2xl font-bold mb-4">Subir Archivos</h1>
     </div>
   );
 }
