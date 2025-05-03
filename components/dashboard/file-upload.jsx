@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Upload } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { toast } from "sonner"
 
 export function FileUpload({ onUpload }) {
   const [dragActive, setDragActive] = useState(false)
@@ -23,18 +24,11 @@ export function FileUpload({ onUpload }) {
     })
 
     if (invalidFiles.length > 0) {
-      toast({
-        title: "Archivos no válidos",
-        description: `Solo se permiten archivos .pdf y .docx. Archivos rechazados: ${invalidFiles.join(", ")}`,
-        variant: "destructive",
-      })
+      toast("Archivos no válidos, solo se aceptan archivos .docx y .pdf")
     }
 
     if (validFiles.length > 0) {
-      toast({
-        title: "Archivos subidos correctamente",
-        description: `Se han subido ${validFiles.length} archivos.`,
-      })
+      toast("Archivos subidos correctamente")
     }
 
     return validFiles
@@ -59,7 +53,7 @@ export function FileUpload({ onUpload }) {
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const validFiles = validateFiles(Array.from(e.dataTransfer.files))
       if (validFiles.length > 0) {
-        onUpload(validFiles)
+        onUpload(validFiles) // Solo se pasa a la función onUpload
       }
     }
   }
@@ -70,7 +64,7 @@ export function FileUpload({ onUpload }) {
     if (e.target.files && e.target.files.length > 0) {
       const validFiles = validateFiles(Array.from(e.target.files))
       if (validFiles.length > 0) {
-        onUpload(validFiles)
+        onUpload(validFiles) // Solo se pasa a la función onUpload
       }
     }
   }
@@ -79,9 +73,7 @@ export function FileUpload({ onUpload }) {
     <Card className="border-dashed">
       <CardContent className="p-0">
         <div
-          className={`relative flex flex-col items-center justify-center p-8 text-center ${
-            dragActive ? "bg-muted/50" : ""
-          }`}
+          className={`relative flex flex-col items-center justify-center p-8 text-center ${dragActive ? "bg-muted/50" : ""}`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}

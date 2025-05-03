@@ -31,7 +31,7 @@ export default function App() {
     });
   }
 
-  const handleFileUpload = (file) => {
+  const handleFileUpload = (file: File) => {
     console.log('Archivo cargado:', file);
   }
   

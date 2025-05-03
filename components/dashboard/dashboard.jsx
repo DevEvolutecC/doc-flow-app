@@ -1,17 +1,36 @@
-"use client"
+'use client'
 
 import { useState } from "react"
 import { AppSidebar } from "./app-sidebar"
 import { FileUpload } from "./file-upload"
 import { FileList } from "./file-list"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { Storage } from 'aws-amplify' // Importa el módulo de almacenamiento de Amplify
 
 export default function Dashboard() {
   const [files, setFiles] = useState([])
 
-  const handleFileUpload = (newFiles) => {
-    setFiles((prevFiles) => [...prevFiles, ...newFiles])
+  // Función para manejar la carga de archivos a S3
+  const handleFileUpload = async (newFiles) => {
+    // Actualizamos el estado local con los nuevos archivos
+    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+
+    // Cargar los archivos a S3
+    try {
+      for (const file of newFiles) {
+        // Sube cada archivo a S3
+        const fileName = `${Date.now()}-${file.name}`; // Nombre único para evitar colisiones
+        await Storage.put(fileName, file, {
+          contentType: file.type, // Configura el tipo de contenido
+        });
+        console.log(`Archivo subido: ${fileName}`);
+      }
+    } catch (error) {
+      console.error("Error al subir archivo:", error);
+    }
   }
+
+  console.log(files);
 
   return (
     <SidebarProvider>
