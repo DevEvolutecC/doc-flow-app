@@ -1,5 +1,5 @@
 import { FileText, Home, LayoutDashboard, Settings, Upload, Users } from "lucide-react"
-
+import Image from "next/image"
 import {
   Sidebar,
   SidebarContent,
@@ -15,19 +15,30 @@ import {
 
 export function AppSidebar() {
   return (
-    <Sidebar>
+   <>
+   <Sidebar>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <LayoutDashboard className="size-4" />
+                <div className="flex aspect-square items-center justify-center">
+                  {/*<LayoutDashboard className="size-4" />*/}
+                  <Image
+                    src="/logo.svg"
+                    alt="Logo"
+                    width={110}
+                    height={54}
+                    className="object-contain"
+                  />
+
                 </div>
+                {/*
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-semibold">Mi Dashboard</span>
                   <span className="text-xs text-muted-foreground">v1.0.0</span>
                 </div>
+                */}
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -91,5 +102,6 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
+   </>
   )
 }

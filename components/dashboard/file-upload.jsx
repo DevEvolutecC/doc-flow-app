@@ -79,8 +79,8 @@ export function FileUpload({ onUpload }) {
           onDragOver={handleDrag}
           onDrop={handleDrop}
         >
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
-            <Upload className="h-10 w-10 text-muted-foreground" />
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary">
+            <Upload className="h-10 w-10 text-white-foreground" />
           </div>
           <h3 className="mt-4 text-lg font-semibold">Arrastra y suelta tus archivos</h3>
           <p className="mt-2 text-sm text-muted-foreground">o haz clic para seleccionar archivos</p>

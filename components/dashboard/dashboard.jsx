@@ -1,38 +1,42 @@
-'use client'
+"use client"
 
 import { useState } from "react"
 import { AppSidebar } from "./app-sidebar"
 import { FileUpload } from "./file-upload"
 import { FileList } from "./file-list"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { Storage } from 'aws-amplify' // Importa el módulo de almacenamiento de Amplify
+import { uploadData } from "aws-amplify/storage";
 
-export default function Dashboard() {
+
+function Dashboard() {
   const [files, setFiles] = useState([])
 
   // Función para manejar la carga de archivos a S3
   const handleFileUpload = async (newFiles) => {
     // Actualizamos el estado local con los nuevos archivos
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+    setFiles((prevFiles) => [...prevFiles, ...newFiles])
 
     // Cargar los archivos a S3
     try {
       for (const file of newFiles) {
         // Sube cada archivo a S3
-        const fileName = `${Date.now()}-${file.name}`; // Nombre único para evitar colisiones
-        
-        await uploadData({
+        const fileName = `${Date.now()}-${file.name}` // Nombre único para evitar colisiones
+
+        uploadData({
           data: file,
-          fileName: fileName,
-        });
-        console.log(`Archivo subido: ${fileName}`);
+          path: `templates/${fileName}`,
+          options: {
+            bucket: "amplify-d2yl9rekppsb0u-ma-amplifyteamdrivebucket28-h6ijgcetu7zf",
+          }
+        })
+        console.log(`Archivo subido: ${fileName}`)
       }
     } catch (error) {
-      console.error("Error al subir archivo:", error);
+      console.error("Error al subir archivo:", error)
     }
   }
 
-  console.log(files);
+  console.log(files)
 
   return (
     <SidebarProvider>
@@ -47,17 +51,25 @@ export default function Dashboard() {
           <main className="flex-1 p-6 space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
               <div className="col-span-2">
-                <h2 className="text-2xl font-bold tracking-tight">Subir Archivos</h2>
-                <p className="text-muted-foreground mt-2">Sube tus archivos en formato .docx o .pdf</p>
+                <h2 className="text-primary text-2xl font-bold tracking-tight">
+                  Subir Archivos
+                </h2>
+                <p className="text-muted-foreground mt-2">
+                  Sube tus archivos en formato .docx o .pdf
+                </p>
               </div>
-              <div className="col-span-2">
-                <FileUpload onUpload={handleFileUpload} />
-              </div>
-              {}
-              <div className="col-span-2">
-                <h3 className="text-xl font-semibold mb-4">Archivos Subidos</h3>
-                <FileList files={files} />
-              </div>
+              {files.length > 0 ? (
+                <div className="col-span-2">
+                  <h3 className="text-xl font-semibold mb-4">
+                    Archivos Seleccionados
+                  </h3>
+                  <FileList files={files} />
+                </div>
+              ) : (
+                <div className="col-span-2">
+                  <FileUpload onUpload={handleFileUpload} />
+                </div>
+              )}
             </div>
           </main>
         </div>
@@ -65,3 +77,6 @@ export default function Dashboard() {
     </SidebarProvider>
   )
 }
+
+
+export default Dashboard
