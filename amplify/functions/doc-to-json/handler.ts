@@ -1,7 +1,6 @@
 import { Handler } from 'aws-lambda';
-import { S3, Textract } from 'aws-sdk';
+import { Textract } from 'aws-sdk';
 
-const s3 = new S3();
 const textract = new Textract();
 
 export const handler: Handler = async (event) => {
