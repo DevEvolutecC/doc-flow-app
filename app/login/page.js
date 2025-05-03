@@ -31,7 +31,7 @@ export default function LoginPage() {
     e.preventDefault()
     setError("")
     try {
-      // await signIn({username: email, password: password})
+      // await signIn({ username: email, password: password })
       router.push("/dashboard")
     } catch (err) {
       setError("Error al iniciar sesión. Verifica tus credenciales.")

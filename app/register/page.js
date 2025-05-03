@@ -49,10 +49,10 @@ export default function RegisterPage() {
     }
 
     try {
-      await signUp({
-        username: formData.email,
-        password: formData.password,
-      })
+      // await signUp({
+      //   username: formData.email,
+      //   password: formData.password,
+      // })
       router.push("/dashboard")
       setSuccess("Registro exitoso. Por favor, verifica tu correo electrónico.")
     } catch (err) {
