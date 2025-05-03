@@ -115,7 +115,7 @@ export function AppSidebar() {
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupContent>
-            <div className='flex items-center p-2'>
+            <div className='flex items-center p-2 !bg-[#5D1B9E] !text-white rounded-md'>
               <Image
                 src='/profile_picture.jpg'
                 alt='Profile Picture'
