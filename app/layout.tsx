@@ -18,7 +18,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        hiolakla
         <main>{children}</main>
       </body>
       <Toaster />
