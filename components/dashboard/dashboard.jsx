@@ -20,8 +20,10 @@ export default function Dashboard() {
       for (const file of newFiles) {
         // Sube cada archivo a S3
         const fileName = `${Date.now()}-${file.name}`; // Nombre único para evitar colisiones
-        await Storage.put(fileName, file, {
-          contentType: file.type, // Configura el tipo de contenido
+        
+        await uploadData({
+          data: file,
+          fileName: fileName,
         });
         console.log(`Archivo subido: ${fileName}`);
       }
@@ -51,6 +53,7 @@ export default function Dashboard() {
               <div className="col-span-2">
                 <FileUpload onUpload={handleFileUpload} />
               </div>
+              {}
               <div className="col-span-2">
                 <h3 className="text-xl font-semibold mb-4">Archivos Subidos</h3>
                 <FileList files={files} />
