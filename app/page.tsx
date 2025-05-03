@@ -6,6 +6,7 @@ import type { Schema } from "@/amplify/data/resource";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
+import FileUpload from '../components/FileUpload';
 
 Amplify.configure(outputs);
 
@@ -30,6 +31,10 @@ export default function App() {
     });
   }
 
+  const handleFileUpload = (file) => {
+    console.log('Archivo cargado:', file);
+  }
+  
   return (
     <main>
       <h1 className="bg-red-500">My todos</h1>
@@ -40,7 +45,8 @@ export default function App() {
         ))}
       </ul>
       <div>
-        🥳 App successfully hosted. Try creating a new todo.
+        <FileUpload onFileUpload={handleFileUpload} />
+        Login/Registro de DocFlow.
         <br />
         <a href="https://docs.amplify.aws/nextjs/start/quickstart/nextjs-app-router-client-components/">
           Review next steps of this tutorial.
