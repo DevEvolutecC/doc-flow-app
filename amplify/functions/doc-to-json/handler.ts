@@ -1,10 +1,10 @@
-import { S3Handler } from 'aws-lambda';
+import { Handler } from 'aws-lambda';
 import { S3, Textract } from 'aws-sdk';
 
 const s3 = new S3();
 const textract = new Textract();
 
-export const handler: S3Handler = async (event) => {
+export const handler: Handler = async (event) => {
   try {
     const record = event.Records[0];
     const bucket = record.s3.bucket.name;
