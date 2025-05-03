@@ -64,6 +64,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
+            <Label htmlFor="email">Contraseña</Label>
               <Input
                 id="password"
                 type="password"
