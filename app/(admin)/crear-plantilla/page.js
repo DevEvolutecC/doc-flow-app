@@ -16,6 +16,32 @@ export function DashboardPage() {
   const [templateName, setTemplateName] = useState("")
   const [file, setFile] = useState(null)
   const [pdfUrl, setPdfUrl] = useState(null)
+  const [isDownloading, setIsDownloading] = useState(false)
+
+
+  const handleDownload = async () => {
+    const fileUrl = "/Contrato_Laboral_Colombia.pdf"
+    try {
+      setIsDownloading(true)
+      const response = await fetch(fileUrl)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = "Contrato_Laboral_Colombia.pdf"
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error("Error al descargar el archivo:", error)
+      alert("Ocurrió un error al intentar descargar el archivo.")
+    } finally {
+      setIsDownloading(false)
+    }
+  }
+  
+
 
   useEffect(() => {
     const id = searchParams.get("id")
@@ -116,12 +142,12 @@ export function DashboardPage() {
           <div className="w-1/2 p-4">
             <div className="border shadow-[0px_3px_30px_#0000000D] rounded-md p-6">
               <p className="text-sm text-gray-500 mb-2">
-          Vista previa del documento
+                Vista previa del documento
               </p>
               <iframe
-          src="/Contrato_Laboral_Colombia.pdf#toolbar=0&navpanes=0&scrollbar=0"
-          className="h-76 w-full"
-          title="Vista previa del PDF"
+                src="/Contrato_Laboral_Colombia.pdf#toolbar=0&navpanes=0&scrollbar=0"
+                className="h-76 w-full"
+                title="Vista previa del PDF"
               />
             </div>
           </div>
@@ -143,27 +169,22 @@ export function DashboardPage() {
                   </button>
                 </div>
 
-                {["Campo 1", "Campo 2", "Campo 3"].map((campo, index) => (
+                {["numero_acta", "tipo_documento", "nombre_empresa"].map((campo, index) => (
                   <div
                     key={index}
                     className="flex justify-between items-center mt-4"
                   >
                     <div className="w-1/2 pr-2">
                       <label className="block text-sm font-medium text-gray-700">
-                        Tipo
+                        {campo}
                       </label>
-                      <select className="block w-full mt-1 border border-gray-300 text-[13px] text-gray-500 rounded-md p-2">
-                        <option>Texto</option>
-                      </select>
-                    </div>
-                    <div className="w-1/2 pl-2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Validación
-                      </label>
-                      <select className="block w-full mt-1 border border-gray-300 text-[13px] text-gray-500 rounded-md p-2">
-                        <option>Opcional</option>
-                        <option>Requerido</option>
-                      </select>
+                      <input
+                        type="text"
+                        className="p-[10px] mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+                        placeholder={`Ingrese ${campo}`}
+                        value=""
+                        onChange={() => { }}
+                      />
                     </div>
                   </div>
                 ))}
@@ -179,13 +200,24 @@ export function DashboardPage() {
               >
                 Volver
               </button>
-              <button
-                type="button"
-                className="px-4 py-2 bg-primary text-white rounded-md shadow-sm hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                onClick={goToTemplates} // Guardar y volver a mis plantillas
-              >
-                Guardar plantilla
-              </button>
+              <div className="flex space-x-2">
+                <button
+                  type="button"
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                  onClick={() => setIsCreating(false)} // Guardar y volver a mis plantillas
+                >
+                  Guardar y volver a mis plantillas
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2 bg-primary text-white rounded-md shadow-sm hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                >
+                  {isDownloading ? "Descargando..." : "Descargar plantilla"}
+                </button>
+
+              </div>
             </div>
           </div>
         </div>
