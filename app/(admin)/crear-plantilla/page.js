@@ -1,31 +1,50 @@
-"use client";
+"use client";  // Marca este archivo como un componente del lado del cliente
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Dashboard from "../../../components/dashboard/dashboard";  // O cualquier otro componente
 
 export function DashboardPage() {
+  const router = useRouter();
   // Estado para gestionar la vista actual
   const [isCreating, setIsCreating] = useState(false);
   const [templateName, setTemplateName] = useState('');
 
   // Función para manejar el cambio de vista
   const handleCreateTemplate = () => {
-    if (templateName) {
-      setIsCreating(true);
+    if (templateName.trim()) {  // Verifica que el nombre de la plantilla no esté vacío
+      setIsCreating(true);  // Cambia a la vista previa
+      // Opcionalmente podemos actualizar la URL para reflejar el cambio
+      // router.push('/vista-previa');
     } else {
       alert("Por favor, ingrese un nombre para la plantilla");
     }
   };
 
+  // Función para volver a la lista de plantillas
+  const goToTemplates = () => {
+    router.push('/mis-plantillas');
+  };
+
   return (
     <div>
+      {/* Migas de pan */}
+      <div className='text-sm text-gray-500 mb-4'>
+        <Link href="/mis-plantillas" className="text-primary hover:underline">Mis plantillas</Link> /
+        {isCreating ? (
+          <>
+            <Link href="/crear-plantilla" className="text-primary hover:underline"> Crear plantilla</Link> /
+            <span className="text-primary"> Vista previa</span>
+          </>
+        ) : (
+          <span className="text-primary"> Crear plantilla</span>
+        )}
+      </div>
+
       {/* Encabezado */}
       <div className='flex items-center justify-between mb-6'>
         <div className='mb-6'>
-          <p className='text-sm text-gray-500'>
-            Mis plantillas
-            <span className='text-primary'> / {isCreating ? "Vista previa" : "Crear plantilla"}</span>
-          </p>
           <h1 className='text-2xl font-bold text-primary'>{isCreating ? "Vista previa del documento" : "Crear plantilla"}</h1>
           <div className='mt-4'>
             {!isCreating && (
@@ -40,13 +59,12 @@ export function DashboardPage() {
                   className='p-[10px] mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm'
                   placeholder='Ingrese el nombre de la plantilla'
                   value={templateName}
-                  onChange={(e) => setTemplateName(e.target.value)}
+                  onChange={(e) => setTemplateName(e.target.value)}  // Actualiza el nombre de la plantilla
                 />
               </>
             )}
           </div>
         </div>
-        <div className='mb-4'></div>
       </div>
 
       {/* Contenido condicional */}
@@ -70,21 +88,20 @@ export function DashboardPage() {
         // Mostrar la vista previa del documento cuando isCreating sea true
         <div className='flex'>
           <div className='w-1/2 p-4'>
-            <div className=" border shadow-[0px_3px_30px_#0000000D] rounded-md p-6">
+            <div className="border shadow-[0px_3px_30px_#0000000D] rounded-md p-6">
               <p className='text-sm text-gray-500 mb-2'>Vista previa del documento</p>
               <div className='border-dashed border-2 h-72'></div>
             </div>
-
           </div>
 
           {/* Campos detectados */}
           <div className='w-1/2 p-4'>
-            <div className=" border shadow-[0px_3px_30px_#0000000D] rounded-md p-6">
+            <div className="border shadow-[0px_3px_30px_#0000000D] rounded-md p-6">
               <p className='text-sm text-gray-500 mb-2'>Campos detectados</p>
               <div className='mb-4'>
                 <div className='flex justify-between flex-wrap'>
                   <span className="w-full text-[#4E4E4E]-700">Nombre completo</span>
-                  <span className="w-full">(Página 1, línea 5)</span>
+                  <span className="w-full text-[13px]">(Página 1, línea 5)</span>
                   <button className='text-red-500'>
                     <i className='fas fa-trash-alt'></i>
                   </button>
@@ -107,11 +124,26 @@ export function DashboardPage() {
                     </div>
                   </div>
                 ))}
-
-
               </div>
             </div>
-            {/* Agregar más campos si es necesario */}
+            
+            {/* Botones de navegación */}
+            <div className='flex justify-between mt-4'>
+              <button
+                type='button'
+                className='px-4 py-2 bg-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500'
+                onClick={() => setIsCreating(false)}  // Volver a la vista de crear plantilla
+              >
+                Volver
+              </button>
+              <button
+                type='button'
+                className='px-4 py-2 bg-primary text-white rounded-md shadow-sm hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary'
+                onClick={goToTemplates}  // Guardar y volver a mis plantillas
+              >
+                Guardar plantilla
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -119,4 +151,4 @@ export function DashboardPage() {
   );
 }
 
-export default DashboardPage;
+export default DashboardPage; 
