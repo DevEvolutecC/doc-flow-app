@@ -29,10 +29,10 @@ export function AppSidebar() {
 
   // Compara si la URL actual coincide con el href del enlace
   const isActive = (href) => {
-    return router.asPath === href;
+    return router === href;
   };
 
-  console.log("URL actual:", router.asPath);
+  console.log("URL actual:", router);
 
   return (
     <>
