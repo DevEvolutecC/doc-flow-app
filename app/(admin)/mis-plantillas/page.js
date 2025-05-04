@@ -1,16 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { FileUpload } from '../../../components/dashboard/file-upload';
-import { FileList } from '../../../components/dashboard/file-list';
+import { useRouter } from 'next/navigation'; 
 import { FileText } from 'lucide-react';
-import { MoreVertical } from 'lucide-react';
 import { ChevronLeft } from 'lucide-react';
 import { ChevronRight } from 'lucide-react';
 import { Eye } from 'lucide-react';
 import { Plus } from 'lucide-react';
 
 function MisPlantillas() {
+  const router = useRouter(); 
   const templates = [
     {
       id: '1',
@@ -331,13 +330,16 @@ function MisPlantillas() {
                         </div>
                         <div className='col-span-2 flex space-x-2'>
                         <button
-                          className='p-2 rounded-full border border-gray-300 text-gray-500 hover:bg-gray-100 relative group'
-                        >
-                          <Eye className='w-4 h-4 text-primary' />
-                          <span className='absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1'>
-                          Ver plantilla
-                          </span>
-                        </button>
+  className="p-2 rounded-full border border-gray-300 text-gray-500 hover:bg-gray-100"
+  onClick={() => router.push(`/mis-plantillas/ver-plantillas?templateId=${template.id}`)}
+>
+  <Eye className="w-4 h-4 text-primary" />
+  <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1">
+    Ver plantilla
+  </span>
+</button>
+
+
                         <button
                           className='p-2 rounded-full border border-gray-300 text-gray-500 hover:bg-gray-100 relative group'
                         >

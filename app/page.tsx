@@ -99,7 +99,7 @@ export default function App() {
             if (user) {
               // Si el usuario está logueado, redirigir al Dashboard
               if (typeof window !== "undefined") {
-                window.location.href = "/dashboard"; // Redirigir al Dashboard
+                window.location.href = "/mis-plantillas"; // Redirigir al Dashboard
               }
             }
 

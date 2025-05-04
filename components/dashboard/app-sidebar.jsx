@@ -126,17 +126,7 @@ export function AppSidebar() {
                   asChild
                   className="!bg-secondary !text-white"
                 >
-                  <Authenticator>
-                    {({ signOut }) => (
-                      <div
-                        className="flex items-center cursor-pointer gap-3"
-                        onClick={signOut}
-                      >
-                        <LogOut />
-                        <span>Cerrar Sesión</span>
-                      </div>
-                    )}
-                  </Authenticator>
+
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
