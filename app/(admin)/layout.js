@@ -3,9 +3,9 @@
 import { Amplify } from 'aws-amplify';
 import { SidebarProvider } from '@/components/ui/sidebar';
 
-import outputs from '@/amplify_outputs.json';
 import { AppSidebar } from '@/components/dashboard/app-sidebar';
 
+import outputs from "@/amplify_outputs.json";
 Amplify.configure(outputs);
 
 export default function Layout({ children }) {

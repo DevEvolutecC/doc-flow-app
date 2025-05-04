@@ -28,6 +28,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
+import { Amplify } from "aws-amplify"
+import outputs from "@/amplify_outputs.json";
+Amplify.configure(outputs);
+
 export default function Page() {
   const [searchQuery, setSearchQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
@@ -74,8 +78,8 @@ export default function Page() {
     }
   }
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-2xl font-bold mb-6">Panel de Documentos</h1>
+    <div className="container mx-auto">
+      <h1 className="text-2xl font-bold text-primary mb-6">Panel de Documentos</h1>
       <div className="space-y-4">
       <div className="flex items-center">
         <div className="relative flex-1">

@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Dashboard from "../../../components/dashboard/dashboard";  // O cualquier otro componente
 
+import { Amplify } from "aws-amplify"
+import outputs from "@/amplify_outputs.json";
+Amplify.configure(outputs);
+
 export function DashboardPage() {
   const router = useRouter();
   // Estado para gestionar la vista actual

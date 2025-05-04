@@ -14,9 +14,9 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useState } from "react"
 import { signIn } from "aws-amplify/auth"
-import { Amplify } from "aws-amplify"
 import { useRouter } from "next/navigation"
 
+import { Amplify } from "aws-amplify"
 import outputs from "@/amplify_outputs.json";
 Amplify.configure(outputs);
 
