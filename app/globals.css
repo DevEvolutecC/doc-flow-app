@@ -119,3 +119,37 @@
     @apply bg-background text-foreground;
   }
 }
+
+button.amplify-button[type="submit"] {
+  background: var(--primary);
+}
+.amplify-tabs__item--active,
+.amplify-tabs__item:hover {
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  background: white !important;
+  border-radius: 8px;
+}
+[data-amplify-authenticator] [data-amplify-router] {
+  border: none !important;
+  box-shadow: none !important;
+}
+.amplify-tabs__item{
+  border: 0px solid !important
+}
+label.amplify-label {
+  color: #89848D;
+}
+.amplify-input {
+  border: 1px solid #742FB8;
+  border-radius: 8px;
+}
+.amplify-input:focus {
+  border-color: var(--primary) !important;
+  box-shadow: none !important;
+}
+.amplify-tabs__list.amplify-tabs__list--top {
+  padding: 10px;
+  background: #F7F7F7;
+  border: none;
+}
