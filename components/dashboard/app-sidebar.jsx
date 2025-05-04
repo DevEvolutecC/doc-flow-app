@@ -1,6 +1,6 @@
-'use client';
+"use client"
 
-import { usePathname } from 'next/navigation'; // Cambia esto
+import { usePathname } from "next/navigation" // Cambia esto
 import {
   FileText,
   Home,
@@ -9,8 +9,8 @@ import {
   Settings,
   Upload,
   Users,
-} from 'lucide-react';
-import Image from 'next/image';
+} from "lucide-react"
+import Image from "next/image"
 import {
   Sidebar,
   SidebarContent,
@@ -22,17 +22,19 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from '@/components/ui/sidebar';
+} from "@/components/ui/sidebar"
+import Link from "next/link"
+import { Authenticator } from "@aws-amplify/ui-react"
 
 export function AppSidebar() {
-  const router = usePathname();
+  const router = usePathname()
 
   // Compara si la URL actual coincide con el href del enlace
   const isActive = (href) => {
-    return router.asPath === href;
-  };
+    return router.asPath === href
+  }
 
-  console.log("URL actual:", router.asPath);
+  console.log("URL actual:", router.asPath)
 
   return (
     <>
@@ -56,27 +58,33 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={isActive('/mis-plantillas')}>
-                    <a href="/mis-plantillas">
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive("/mis-plantillas")}
+                  >
+                    <Link href="/mis-plantillas">
                       <FileText />
                       <span>Mis Plantillas</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={isActive('/subir-archivos')}>
-                    <a href="/subir-archivos">
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive("/subir-archivos")}
+                  >
+                    <Link href="/subir-archivos">
                       <Upload />
                       <span>Subir Archivos</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={isActive('/documentos')}>
-                    <a href="/documentos">
+                  <SidebarMenuButton asChild isActive={isActive("/documentos")}>
+                    <Link href="/documentos">
                       <FileText />
                       <span>Documentos</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
@@ -87,19 +95,22 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={isActive('/usuarios')}>
-                    <a href="/usuarios">
+                  <SidebarMenuButton asChild isActive={isActive("/usuarios")}>
+                    <Link href="/usuarios">
                       <Users />
                       <span>Usuarios</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={isActive('/configuracion')}>
-                    <a href="/configuracion">
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive("/configuracion")}
+                  >
+                    <Link href="/configuracion">
                       <Settings />
                       <span>Configuración</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
@@ -111,11 +122,21 @@ export function AppSidebar() {
             <hr className="border-t my-4 w-9" />
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild className="!bg-secondary !text-white">
-                  <a href="#">
-                    <LogOut />
-                    <span>Cerrar Sesión</span>
-                  </a>
+                <SidebarMenuButton
+                  asChild
+                  className="!bg-secondary !text-white"
+                >
+                  <Authenticator>
+                    {({ signOut }) => (
+                      <div
+                        className="flex items-center cursor-pointer gap-3"
+                        onClick={signOut}
+                      >
+                        <LogOut />
+                        <span>Cerrar Sesión</span>
+                      </div>
+                    )}
+                  </Authenticator>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -132,7 +153,9 @@ export function AppSidebar() {
                 className="rounded-full object-cover"
               />
               <div className="ml-3">
-                <span className="text-sm font-medium">Fundación Código Abierto</span>
+                <span className="text-sm font-medium">
+                  Fundación Código Abierto
+                </span>
                 <br />
                 <span className="text-xs text-white">Empresa</span>
               </div>
@@ -143,5 +166,5 @@ export function AppSidebar() {
         <SidebarRail />
       </Sidebar>
     </>
-  );
+  )
 }
