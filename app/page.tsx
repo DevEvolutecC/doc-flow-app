@@ -25,11 +25,6 @@ const theme = {
 // Personalización de los componentes (Headers y Footers)
 const components = {
   SignIn: {
-    Header() {
-      return (
-        <h2 className="text-center text-2xl font-bold mb-4">Inicia sesión en tu cuenta</h2>
-      );
-    },
     Footer() {
       return (
         <div className="text-center">
@@ -41,11 +36,6 @@ const components = {
     },
   },
   SignUp: {
-    Header() {
-      return (
-        <h2 className="text-center text-2xl font-bold mb-4">Crea una cuenta nueva</h2>
-      );
-    },
     Footer() {
       return (
         <div className="text-center">
@@ -62,9 +52,11 @@ const components = {
 const formFields = {
   signIn: {
     username: {
+      label: "Correo electrónico",
       placeholder: "Introduce tu correo electrónico",
     },
     password: {
+      label: "Contraseña",
       placeholder: "Introduce tu contraseña",
     },
   },
@@ -92,8 +84,6 @@ export default function App() {
         <Authenticator
           formFields={formFields}
           components={components}
-          // theme={theme as any} // Aplicar el tema personalizado
-          socialProviders={['google']}
         >
           {({ signOut, user }) => {
             if (user) {
@@ -113,7 +103,10 @@ export default function App() {
 
       {/* Sección de bienvenida a la derecha */}
       <div className="w-1/2 text-white p-8 flex flex-col justify-center items-center">
-        <div className="h-full bg-primary w-full rounded-[30px] flex flex-col justify-center items-center p-8">
+        <div
+          className="h-full bg-cover bg-center bg-primary w-full rounded-[30px] flex flex-col justify-center items-center p-8"
+          style={{ backgroundImage: "url('/fondo-login.svg')" }}
+        >
           <h1 className="text-4xl font-bold mb-4">DocFlow</h1>
           <p className="text-lg text-center mb-6">
             Documentos más inteligentes, trabajo más ágil.
