@@ -73,7 +73,7 @@ export function AppSidebar() {
                     asChild
                     isActive={isActive("/subir-archivos")}
                   >
-                    <Link href="/subir-archivos">
+                    <Link href="/crear-plantilla">
                       <Upload />
                       <span>Subir Archivos</span>
                     </Link>

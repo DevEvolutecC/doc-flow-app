@@ -1,354 +1,282 @@
-'use client';
+"use client"
 
-import React, { useState, useRef, useEffect } from 'react';
-import { PDFDocument, rgb } from 'pdf-lib';
-import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
-import { TextractClient, AnalyzeDocumentCommand } from '@aws-sdk/client-textract';
-import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
-import { ComprehendClient, DetectEntitiesCommand } from '@aws-sdk/client-comprehend';
-import usePdfProcessor from './usePdfProcessor';
+import { useState } from "react"
+import {
+  ArrowLeft,
+  ArrowRight,
+  File,
+  FileText,
+  FileIcon as FilePdf,
+  FileImage,
+  Loader2,
+  Search,
+  Trash2,
+} from "lucide-react"
 
-// Configuración de AWS
-const awsConfig = {
-  region: 'us-east-1',
-  identityPoolId: 'us-east-1:92771535-53bc-4898-8412-3e199a7391f4',
-  textractConfig: {
-    featureTypes: ['FORMS', 'TABLES']
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
+export default function Page() {
+  const [searchQuery, setSearchQuery] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [documents, setDocuments] = useState(mockDocuments)
+
+  const itemsPerPage = 5
+
+  // Filtrar documentos según la búsqueda
+  const filteredDocuments = documents.filter((doc) => doc.name.toLowerCase().includes(searchQuery.toLowerCase()))
+
+  // Calcular paginación
+  const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const paginatedDocuments = filteredDocuments.slice(startIndex, startIndex + itemsPerPage)
+
+  // Manejar eliminación de documento
+  const handleDeleteDocument = (id) => {
+    setIsDeleting(true)
+
+    // Simular una operación asíncrona
+    setTimeout(() => {
+      setDocuments(documents.filter((doc) => doc.id !== id))
+      setIsDeleting(false)
+    }, 500)
   }
-};
 
-GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js`;
-
-const SmartPdfEditor = () => {
-  const [pdfUrl, setPdfUrl] = useState('');
-  const [originalPdf, setOriginalPdf] = useState(null);
-  const [editedPdfUrl, setEditedPdfUrl] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [highlightedAreas, setHighlightedAreas] = useState([]);
-  const [recommendations, setRecommendations] = useState([]);
-  const pdfViewerRef = useRef(null);
-
-  const { processPdf, analysisResults, error } = usePdfProcessor(awsConfig);
-  console.log('analysisResults', analysisResults)
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setIsProcessing(true);
-    setPdfUrl('');
-    setEditedPdfUrl('');
-    setHighlightedAreas([]);
-    setRecommendations([]);
-
-    try {
-      // // 1. Mostrar el PDF original
-      const url = URL.createObjectURL(file);
-      setPdfUrl(url);
-
-      // 2. Procesar con Textract
-      const response = await processPdf(file);
-
-      // 3. Analizar contexto con Comprehend
-      const textContext = extractTextForAnalysis(response);
-      const entities = await analyzeTextWithComprehend(textContext);
-      generateRecommendations(entities, response);
-
-      // 4. Preparar áreas para resaltado
-      prepareHighlightAreas(response);
-    } catch (err) {
-      console.error('Error al procesar PDF:', err);
-    } finally {
-      setIsProcessing(false);
+  // Obtener el icono según el tipo de archivo
+  const getFileIcon = (type) => {
+    switch (type) {
+      case "pdf":
+        return <FilePdf className="h-5 w-5 text-red-500" />
+      case "docx":
+        return <FileText className="h-5 w-5 text-blue-500" />
+      case "xlsx":
+        return <FileText className="h-5 w-5 text-green-500" />
+      case "pptx":
+        return <FileText className="h-5 w-5 text-orange-500" />
+      case "jpg":
+      case "png":
+        return <FileImage className="h-5 w-5 text-purple-500" />
+      default:
+        return <File className="h-5 w-5 text-gray-500" />
     }
-  };
-
-  // Analizar texto con Amazon Comprehend
-  const analyzeTextWithComprehend = async (text) => {
-    if (!text || text.length < 20) return []; // Comprehend necesita mínimo 20 caracteres
-    
-    const params = {
-      Text: text,
-      LanguageCode: 'es' // o 'en' según el idioma
-    };
-
-    try {
-      const command = new DetectEntitiesCommand(params);
-      const response = await comprehendClient.current.send(command);
-      return response.Entities || [];
-    } catch (err) {
-      console.error('Error en Comprehend:', err);
-      return [];
-    }
-  };
-
-  // Extraer texto para análisis contextual
-  const extractTextForAnalysis = (textractResponse) => {
-    if (!textractResponse.Blocks) return '';
-    
-    return textractResponse.Blocks
-      .filter(block => block.BlockType === 'LINE' && block.Text)
-      .map(block => block.Text)
-      .join('\n')
-      .substring(0, 5000); // Límite de Comprehend
-  };
-
-  // Generar recomendaciones basadas en el análisis
-  const generateRecommendations = (entities, textractData) => {
-    const recs = [];
-    
-    // Ejemplo: Detectar fechas importantes
-    const dates = entities.filter(e => e.Type === 'DATE');
-    if (dates.length > 0) {
-      recs.push({
-        type: 'date',
-        message: `Se detectaron ${dates.length} fechas importantes. Verifica que estén correctas.`,
-        items: dates.map(d => d.Text)
-      });
-    }
-
-    // Ejemplo: Detectar nombres propios
-    const names = entities.filter(e => e.Type === 'PERSON');
-    if (names.length > 0) {
-      recs.push({
-        type: 'person',
-        message: `Se detectaron ${names.length} nombres propios. Confirma la ortografía.`,
-        items: names.map(n => n.Text)
-      });
-    }
-
-    // Ejemplo: Detectar posibles errores en tablas
-    if (textractData.Blocks.some(b => b.BlockType === 'TABLE')) {
-      recs.push({
-        type: 'table',
-        message: 'Se detectaron tablas. Revisa la alineación de los datos.',
-        items: []
-      });
-    }
-
-    setRecommendations(recs);
-  };
-
-  // Preparar áreas para resaltado interactivo
-  const prepareHighlightAreas = (textractResponse) => {
-    if (!textractResponse.Blocks) return;
-    
-    const lines = textractResponse.Blocks
-      .filter(block => block.BlockType === 'LINE' && block.Text && block.Geometry)
-      .map(block => ({
-        text: block.Text,
-        boundingBox: block.Geometry.BoundingBox,
-        page: 1 // Asumimos primera página para este ejemplo
-      }));
-
-    setHighlightedAreas(lines);
-  };
-
-  // Resaltar texto en el visor PDF
-  const highlightTextInViewer = () => {
-    if (!pdfViewerRef.current || !highlightedAreas.length) return;
-    
-    const iframe = pdfViewerRef.current;
-    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-    const pageContainer = iframeDoc.querySelector('.page');
-    
-    if (!pageContainer) return;
-
-    // Eliminar resaltados anteriores
-    const oldHighlights = iframeDoc.querySelectorAll('.text-highlight');
-    oldHighlights.forEach(el => el.remove());
-    
-    // Añadir nuevos resaltados
-    highlightedAreas.forEach(area => {
-      const highlight = iframeDoc.createElement('div');
-      highlight.className = 'text-highlight';
-      highlight.style.position = 'absolute';
-      highlight.style.left = `${area.boundingBox.Left * 100}%`;
-      highlight.style.top = `${area.boundingBox.Top * 100}%`;
-      highlight.style.width = `${area.boundingBox.Width * 100}%`;
-      highlight.style.height = `${area.boundingBox.Height * 100}%`;
-      highlight.style.backgroundColor = 'rgba(255, 255, 0, 0.3)';
-      highlight.style.pointerEvents = 'auto';
-      highlight.style.cursor = 'pointer';
-      highlight.dataset.text = area.text;
-      
-      highlight.addEventListener('click', () => {
-        handleTextSelection(area);
-      });
-      
-      pageContainer.appendChild(highlight);
-    });
-  };
-
-  // Manejar selección de texto para edición
-  const handleTextSelection = (area) => {
-    const text = prompt('Editar texto:', area.text);
-    if (text !== null && text !== area.text) {
-      // Aquí implementarías la lógica para actualizar el PDF
-      console.log(`Texto cambiado de "${area.text}" a "${text}"`);
-    }
-  };
-
-  // Generar PDF formal con cambios
-  const generateFormalPdf = async () => {
-    if (!originalPdf) return;
-    
-    setIsProcessing(true);
-    try {
-      // 1. Cargar el PDF original
-      const pdfBytes = await fetch(pdfUrl).then(res => res.arrayBuffer());
-      const pdfDoc = await PDFDocument.load(pdfBytes);
-      
-      // 2. Modificar el contenido (ejemplo)
-      const pages = pdfDoc.getPages();
-      const firstPage = pages[0];
-      
-      // Aquí iría la lógica para aplicar los cambios reales
-      // Por ahora solo un ejemplo de modificación
-      firstPage.drawText('DOCUMENTO FORMAL', {
-        x: 50,
-        y: firstPage.getHeight() - 50,
-        size: 16,
-        color: rgb(0.2, 0.2, 0.2),
-      });
-      
-      // 3. Guardar el PDF modificado
-      const modifiedPdfBytes = await pdfDoc.save();
-      const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      
-      setEditedPdfUrl(url);
-      
-    } catch (err) {
-      console.error('Error al generar PDF:', err);
-      setError('Error al generar el documento formal');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  // Efecto para resaltar texto cuando hay áreas detectadas
-  useEffect(() => {
-    if (highlightedAreas.length > 0) {
-      const timer = setTimeout(() => {
-        highlightTextInViewer();
-      }, 2000); // Dar tiempo al iframe para cargar
-      
-      return () => clearTimeout(timer);
-    }
-  }, [highlightedAreas]);
-
+  }
   return (
-    <div className="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Editor Inteligente de PDF</h1>
-      
-      <div className="space-y-6">
-        {/* Subir PDF */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Subir documento PDF (manuscrito o digital)
-          </label>
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={handleFileUpload}
-            className="block w-full text-sm text-gray-500
-              file:mr-4 file:py-2 file:px-4
-              file:rounded-md file:border-0
-              file:text-sm file:font-semibold
-              file:bg-blue-50 file:text-blue-700
-              hover:file:bg-blue-100"
-            disabled={isProcessing}
+    <div className="container mx-auto py-10">
+      <h1 className="text-2xl font-bold mb-6">Panel de Documentos</h1>
+      <div className="space-y-4">
+      <div className="flex items-center">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Buscar documentos..."
+            className="pl-8"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value)
+              setCurrentPage(1) // Resetear a primera página al buscar
+            }}
           />
         </div>
-
-        {isProcessing && (
-          <div className="p-4 bg-blue-50 text-blue-700 rounded-md">
-            <p>Analizando documento con IA...</p>
-            <p className="text-sm mt-1">Esto puede tomar varios segundos.</p>
-          </div>
-        )}
-
-        {error && (
-          <div className="p-4 bg-red-50 text-red-700 rounded-md">
-            {error}
-          </div>
-        )}
-
-        {/* Recomendaciones de IA */}
-        {recommendations.length > 0 && (
-          <div className="space-y-3">
-            <h2 className="text-lg font-semibold text-gray-800">Recomendaciones de IA:</h2>
-            {recommendations.map((rec, index) => (
-              <div key={index} className="p-3 bg-amber-50 border-l-4 border-amber-400 rounded">
-                <p className="font-medium text-gray-800">{rec.message}</p>
-                {rec.items.length > 0 && (
-                  <ul className="mt-1 ml-4 list-disc text-sm text-gray-700">
-                    {rec.items.map((item, i) => (
-                      <li key={i}>{item}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Visor de PDF con resaltados */}
-        {pdfUrl && (
-          <div className="border border-gray-300 rounded-md overflow-hidden">
-            <iframe
-              ref={pdfViewerRef}
-              src={pdfUrl}
-              className="w-full h-[500px]"
-              title="Visor de PDF con resaltados"
-            />
-            <div className="p-3 bg-gray-50 border-t border-gray-200">
-              <p className="text-sm text-gray-600">
-                Haz clic en las áreas resaltadas para editar el texto
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Controles de edición */}
-        {pdfUrl && (
-          <div className="flex space-x-4">
-            <button
-              onClick={generateFormalPdf}
-              disabled={isProcessing}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400"
-            >
-              Generar PDF Formal
-            </button>
-          </div>
-        )}
-
-        {/* Vista previa del PDF editado */}
-        {editedPdfUrl && (
-          <div className="mt-6">
-            <h2 className="text-lg font-semibold mb-2 text-gray-800">Documento Formal Generado:</h2>
-            <iframe
-              src={editedPdfUrl}
-              className="w-full h-[500px] border border-gray-300 rounded-md"
-              title="PDF formal generado"
-            />
-            <div className="mt-2">
-              <a
-                href={editedPdfUrl}
-                download="documento_formal.pdf"
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                Descargar PDF Formal
-              </a>
-            </div>
-          </div>
-        )}
       </div>
-    </div>
-  );
-};
 
-export default SmartPdfEditor;
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[40px]"></TableHead>
+              <TableHead>Nombre</TableHead>
+              <TableHead className="hidden md:table-cell">Tamaño</TableHead>
+              <TableHead className="hidden md:table-cell">Fecha</TableHead>
+              <TableHead className="w-[100px]">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedDocuments.length > 0 ? (
+              paginatedDocuments.map((doc) => (
+                <TableRow key={doc.id}>
+                  <TableCell>{getFileIcon(doc.type)}</TableCell>
+                  <TableCell className="font-medium">{doc.name}</TableCell>
+                  <TableCell className="hidden md:table-cell">{doc.size}</TableCell>
+                  <TableCell className="hidden md:table-cell">{doc.uploadedAt}</TableCell>
+                  <TableCell>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Eliminar</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta acción no se puede deshacer. Esto eliminará permanentemente el documento
+                            <span className="font-semibold"> {doc.name}</span>.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteDocument(doc.id)}
+                            className="bg-red-500 hover:bg-red-600"
+                          >
+                            {isDeleting ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Eliminando
+                              </>
+                            ) : (
+                              "Eliminar"
+                            )}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} className="h-24 text-center">
+                  No se encontraron documentos.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Paginación */}
+      {filteredDocuments.length > 0 && (
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-muted-foreground">
+            Mostrando {startIndex + 1} a {Math.min(startIndex + itemsPerPage, filteredDocuments.length)} de{" "}
+            {filteredDocuments.length} documentos
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Anterior
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Siguiente
+              <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+    </div>
+  )
+}
+
+const mockDocuments = [
+  {
+    id: "1",
+    name: "Informe_Mensual.pdf",
+    type: "pdf",
+    size: "2.4 MB",
+    uploadedAt: "2023-10-15",
+  },
+  {
+    id: "2",
+    name: "Contrato_Servicio.docx",
+    type: "docx",
+    size: "1.8 MB",
+    uploadedAt: "2023-10-12",
+  },
+  {
+    id: "3",
+    name: "Presentacion_Proyecto.pptx",
+    type: "pptx",
+    size: "5.7 MB",
+    uploadedAt: "2023-10-10",
+  },
+  {
+    id: "4",
+    name: "Imagen_Producto.jpg",
+    type: "jpg",
+    size: "3.2 MB",
+    uploadedAt: "2023-10-08",
+  },
+  {
+    id: "5",
+    name: "Datos_Clientes.xlsx",
+    type: "xlsx",
+    size: "1.5 MB",
+    uploadedAt: "2023-10-05",
+  },
+  {
+    id: "6",
+    name: "Manual_Usuario.pdf",
+    type: "pdf",
+    size: "4.1 MB",
+    uploadedAt: "2023-10-03",
+  },
+  {
+    id: "7",
+    name: "Reporte_Financiero.pdf",
+    type: "pdf",
+    size: "2.9 MB",
+    uploadedAt: "2023-09-28",
+  },
+  {
+    id: "8",
+    name: "Calendario_Eventos.xlsx",
+    type: "xlsx",
+    size: "1.2 MB",
+    uploadedAt: "2023-09-25",
+  },
+  {
+    id: "9",
+    name: "Logo_Empresa.png",
+    type: "png",
+    size: "0.8 MB",
+    uploadedAt: "2023-09-20",
+  },
+  {
+    id: "10",
+    name: "Acta_Reunion.docx",
+    type: "docx",
+    size: "1.6 MB",
+    uploadedAt: "2023-09-18",
+  },
+  {
+    id: "11",
+    name: "Presupuesto_2023.xlsx",
+    type: "xlsx",
+    size: "2.2 MB",
+    uploadedAt: "2023-09-15",
+  },
+  {
+    id: "12",
+    name: "Catalogo_Productos.pdf",
+    type: "pdf",
+    size: "6.3 MB",
+    uploadedAt: "2023-09-10",
+  },
+]

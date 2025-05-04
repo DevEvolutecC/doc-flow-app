@@ -5,6 +5,14 @@ import {
 } from "@aws-sdk/client-textract"
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers"
 
+const awsConfig = {
+  region: 'us-east-1',
+  identityPoolId: 'us-east-1:92771535-53bc-4898-8412-3e199a7391f4',
+  textractConfig: {
+    featureTypes: ['FORMS', 'TABLES']
+  }
+};
+
 const usePdfProcessor = (awsConfig) => {
   const [analysisResults, setAnalysisResults] = useState(null)
   const [error, setError] = useState(null)
