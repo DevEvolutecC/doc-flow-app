@@ -116,9 +116,13 @@ export function DashboardPage() {
           <div className="w-1/2 p-4">
             <div className="border shadow-[0px_3px_30px_#0000000D] rounded-md p-6">
               <p className="text-sm text-gray-500 mb-2">
-                Vista previa del documento
+          Vista previa del documento
               </p>
-              <iframe src={pdfUrl} className="h-76" />
+              <iframe
+          src="/Contrato_Laboral_Colombia.pdf#toolbar=0&navpanes=0&scrollbar=0"
+          className="h-76 w-full"
+          title="Vista previa del PDF"
+              />
             </div>
           </div>
 
@@ -129,10 +133,10 @@ export function DashboardPage() {
               <div className="mb-4">
                 <div className="flex justify-between flex-wrap">
                   <span className="w-full text-[#4E4E4E]-700">
-                    Nombre completo
+                    Contratos
                   </span>
                   <span className="w-full text-[13px]">
-                    (Página 1, línea 5)
+                    (Página 2)
                   </span>
                   <button className="text-red-500">
                     <i className="fas fa-trash-alt"></i>
