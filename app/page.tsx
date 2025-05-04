@@ -92,7 +92,7 @@ export default function App() {
         <Authenticator
           formFields={formFields}
           components={components}
-          theme={theme} // Aplicar el tema personalizado
+          // theme={theme as any} // Aplicar el tema personalizado
           socialProviders={['google']}
         >
           {({ signOut, user }) => {
