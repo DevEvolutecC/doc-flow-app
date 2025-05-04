@@ -103,6 +103,19 @@ const SmartPdfEditor = () => {
     const command = new AnalyzeDocumentCommand(params);
     const response = await textractClient.current.send(command);
     console.log('Respuesta de Textract:', response);
+    if (response.Blocks) {
+      const lines = response.Blocks.filter(block => block.BlockType === 'LINE');
+      console.log('Texto extraído:', lines.map(line => line.Text).join('\n'));
+    }
+    setOriginalPdf(arrayBuffer);
+    setPdfUrl(URL.createObjectURL(new Blob([arrayBuffer], { type: 'application/pdf' })));
+    setHighlightedAreas(lines.map(line => ({
+      text: line.Text,
+      boundingBox: line.Geometry.BoundingBox,
+      page: line.Page
+    })));
+    console.log('Áreas resaltadas:', lines);
+    // Aquí puedes guardar el PDF original en el estado o en otro lugar
     return response;
   };
 
