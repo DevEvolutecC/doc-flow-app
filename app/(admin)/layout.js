@@ -16,7 +16,7 @@ export default function Layout({ children }) {
         <AppSidebar />
         
         {/* Área de contenido principal */}
-        <div className="flex-1 bg-background">
+        <div className="flex-1 min-w-[82vw] bg-background">
           {children}
         </div>
       </div>

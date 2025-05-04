@@ -1,3 +1,6 @@
+'use client';
+
+import { usePathname } from 'next/navigation'; // Cambia esto
 import {
   FileText,
   Home,
@@ -22,19 +25,27 @@ import {
 } from '@/components/ui/sidebar';
 
 export function AppSidebar() {
+  const router = usePathname();
+
+  // Compara si la URL actual coincide con el href del enlace
+  const isActive = (href) => {
+    return router.asPath === href;
+  };
+
+  console.log("URL actual:", router.asPath);
+
   return (
     <>
       <Sidebar variant="sidebar">
         <SidebarHeader>
           <SidebarMenu>
-            <div className='flex items-center justify-center mx-4 my-3'>
-              {/*<LayoutDashboard className="size-4" />*/}
+            <div className="flex items-center justify-center mx-4 my-3">
               <Image
-                src='/logo_admin.svg'
-                alt='Logo'
+                src="/logo_admin.svg"
+                alt="Logo"
                 width={120}
                 height={20}
-                className='object-contain'
+                className="object-contain"
               />
             </div>
           </SidebarMenu>
@@ -45,24 +56,24 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <a href='#'>
-                      <Home />
-                      <span>Inicio</span>
+                  <SidebarMenuButton asChild isActive={isActive('/mis-plantillas')}>
+                    <a href="/mis-plantillas">
+                      <FileText />
+                      <span>Mis Plantillas</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive>
-                    <a href='#'>
+                  <SidebarMenuButton asChild isActive={isActive('/subir-archivos')}>
+                    <a href="/subir-archivos">
                       <Upload />
                       <span>Subir Archivos</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <a href='#'>
+                  <SidebarMenuButton asChild isActive={isActive('/documentos')}>
+                    <a href="/documentos">
                       <FileText />
                       <span>Documentos</span>
                     </a>
@@ -76,16 +87,16 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <a href='#'>
+                  <SidebarMenuButton asChild isActive={isActive('/usuarios')}>
+                    <a href="/usuarios">
                       <Users />
                       <span>Usuarios</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <a href='#'>
+                  <SidebarMenuButton asChild isActive={isActive('/configuracion')}>
+                    <a href="/configuracion">
                       <Settings />
                       <span>Configuración</span>
                     </a>
@@ -97,14 +108,11 @@ export function AppSidebar() {
         </SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <hr className='border-t my-4 w-9' />
+            <hr className="border-t my-4 w-9" />
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className='!bg-[#5D1B9E] !text-white'
-                >
-                  <a href='#'>
+                <SidebarMenuButton asChild className="!bg-secondary !text-white">
+                  <a href="#">
                     <LogOut />
                     <span>Cerrar Sesión</span>
                   </a>
@@ -115,18 +123,18 @@ export function AppSidebar() {
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupContent>
-            <div className='flex items-center p-2 !bg-[#5D1B9E] !text-white rounded-md'>
+            <div className="flex items-center p-2 !bg-secondary !text-white rounded-md">
               <Image
-                src='/profile_picture.jpg'
-                alt='Profile Picture'
+                src="/profile_picture.jpg"
+                alt="Profile Picture"
                 width={40}
                 height={40}
-                className='rounded-full object-cover'
+                className="rounded-full object-cover"
               />
-              <div className='ml-3'>
-                <span className='text-sm font-medium'>Fundación Código Abierto</span>
+              <div className="ml-3">
+                <span className="text-sm font-medium">Fundación Código Abierto</span>
                 <br />
-                <span className='text-xs text-white'>Empresa</span>
+                <span className="text-xs text-white">Empresa</span>
               </div>
             </div>
           </SidebarGroupContent>
