@@ -91,9 +91,10 @@ function CrearDocumento() {
           <DialogHeader>
             <DialogTitle className="text-purple-600 flex items-center justify-between">
               Generar múltiples documentos
-              <Button variant="ghost" size="icon" onClick={() => setIsMultipleDocsModalOpen(false)} className="h-6 w-6">
-                <X className="h-4 w-4" />
+              {/*<Button variant="ghost" size="icon" onClick={() => setIsMultipleDocsModalOpen(false)} className="h-6 w-6">
+                
               </Button>
+              */}
             </DialogTitle>
             <DialogDescription>
               ¿Necesitas crear varios documentos a la vez? Esta función te permite hacerlo de forma rápida a partir de
