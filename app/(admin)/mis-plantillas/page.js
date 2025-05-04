@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation';
 import { FileText } from 'lucide-react';
 import { ChevronLeft } from 'lucide-react';
 import { ChevronRight } from 'lucide-react';
@@ -9,7 +9,7 @@ import { Eye } from 'lucide-react';
 import { Plus } from 'lucide-react';
 
 function MisPlantillas() {
-  const router = useRouter(); 
+  const router = useRouter();
   const templates = [
     {
       id: '1',
@@ -297,64 +297,56 @@ function MisPlantillas() {
               <div className='mb-4 text-sm text-gray-500'>
                 Total de plantillas: {templates.length}
               </div>
-              
-                      <div className='grid grid-cols-12 gap-4 bg-gray-50 p-3 rounded-t-lg'>
-                      <div className='col-span-5 font-medium text-gray-500'>
-                        Nombre de la plantilla
-                      </div>
-                      <div className='col-span-3 font-medium text-gray-500'>
-                        Fecha en la que se subió
-                      </div>
-                      <div className='col-span-2 font-medium text-gray-500'>
-                        Archivos creados
-                      </div>
-                      <div className='col-span-2 font-medium text-gray-500'>
-                        Acciones
-                      </div>
-                      </div>
 
-                      {currentItems.map((template) => (
-                      <div
-                        key={template.id}
-                        className='grid grid-cols-12 gap-4 p-3 items-center hover:bg-gray-50'
-                      >
-                        <div className='col-span-5 flex items-center'>
-                        <FileText className='text-blue-500 mr-2' size={18} />
-                        <span className='text-gray-800'>{template.name}</span>
-                        </div>
-                        <div className='col-span-3 text-gray-600'>
-                        {template.uploadDate}
-                        </div>
-                        <div className='col-span-2 text-gray-600'>
-                        {template.filesCreated}
-                        </div>
-                        <div className='col-span-2 flex space-x-2'>
-                        <button
-  className="p-2 rounded-full border border-gray-300 text-gray-500 hover:bg-gray-100"
-  onClick={() => router.push(`/mis-plantillas/ver-plantillas?templateId=${template.id}`)}
->
-  <Eye className="w-4 h-4 text-primary" />
-  <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1">
-    Ver plantilla
-  </span>
-</button>
+              <div className='grid grid-cols-12 gap-4 bg-gray-50 p-3 rounded-t-lg'>
+                <div className='col-span-5 font-medium text-gray-500'>
+                  Nombre de la plantilla
+                </div>
+                <div className='col-span-3 font-medium text-gray-500'>
+                  Fecha en la que se subió
+                </div>
+                <div className='col-span-2 font-medium text-gray-500'>
+                  Archivos creados
+                </div>
+                <div className='col-span-2 font-medium text-gray-500'>
+                  Acciones
+                </div>
+              </div>
+
+              {currentItems.map((template) => (
+                <div
+                  key={template.id}
+                  className='grid grid-cols-12 gap-4 p-3 items-center hover:bg-gray-50'
+                >
+                  <div className='col-span-5 flex items-center'>
+                    <FileText className='text-blue-500 mr-2' size={18} />
+                    <span className='text-gray-800'>{template.name}</span>
+                  </div>
+                  <div className='col-span-3 text-gray-600'>
+                    {template.uploadDate}
+                  </div>
+                  <div className='col-span-2 text-gray-600'>
+                    {template.filesCreated}
+                  </div>
+                  <div className='col-span-2 flex space-x-2'>
+                    <button
+                      className="p-2 rounded-full border border-gray-300 text-gray-500 hover:bg-gray-100"
+                      onClick={() => router.push(`/mis-plantillas/ver-plantillas?templateId=${template.id}`)}
+                    >
+                      <Eye className="w-4 h-4 text-primary" />
+                      <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1">
+                        Ver plantilla
+                      </span>
+                    </button>
 
 
-                        <button
-                          className='p-2 rounded-full border border-gray-300 text-gray-500 hover:bg-gray-100 relative group'
-                        >
-                          <Plus className='w-4 h-4 text-primary' />
-                          <span className='absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1'>
-                          Agregar plantilla
-                          </span>
-                        </button>
-                        </div>
-                      </div>
-                      ))}
-                    </div>
-                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-                    {/* Paginación */}
+          {/* Paginación */}
           <div className='flex items-center justify-between mt-4 px-3 py-2 border-t border-gray-200'>
             <div className='text-sm text-gray-500'>
               Filas por página:
