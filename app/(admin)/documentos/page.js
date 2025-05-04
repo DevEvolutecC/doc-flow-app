@@ -6,11 +6,12 @@ import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
 import { TextractClient, AnalyzeDocumentCommand } from '@aws-sdk/client-textract';
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
 import { ComprehendClient, DetectEntitiesCommand } from '@aws-sdk/client-comprehend';
+import usePdfProcessor from './usePdfProcessor';
 
 // Configuración de AWS
 const awsConfig = {
   region: 'us-east-1',
-  identityPoolId: 'us-east-1:bf6dc560-c11e-4f83-a215-b1cf949dd8b4',
+  identityPoolId: 'us-east-1:92771535-53bc-4898-8412-3e199a7391f4',
   textractConfig: {
     featureTypes: ['FORMS', 'TABLES']
   }
@@ -23,59 +24,29 @@ const SmartPdfEditor = () => {
   const [originalPdf, setOriginalPdf] = useState(null);
   const [editedPdfUrl, setEditedPdfUrl] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState('');
   const [highlightedAreas, setHighlightedAreas] = useState([]);
-  const [analysisResults, setAnalysisResults] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const pdfViewerRef = useRef(null);
-  const textractClient = useRef(null);
-  const comprehendClient = useRef(null);
 
-  // Inicializar clientes AWS
-  useEffect(() => {
-    textractClient.current = new TextractClient({
-      region: awsConfig.region,
-      credentials: fromCognitoIdentityPool({
-        clientConfig: { region: awsConfig.region },
-        identityPoolId: awsConfig.identityPoolId,
-      }),
-    });
-
-    comprehendClient.current = new ComprehendClient({
-      region: awsConfig.region,
-      credentials: fromCognitoIdentityPool({
-        clientConfig: { region: awsConfig.region },
-        identityPoolId: awsConfig.identityPoolId,
-      }),
-    });
-
-    return () => {
-      // Limpieza si es necesario
-    };
-  }, []);
-
-  // Procesar PDF subido
+  const { processPdf, analysisResults, error } = usePdfProcessor(awsConfig);
+  console.log('analysisResults', analysisResults)
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setIsProcessing(true);
-    setError('');
     setPdfUrl('');
     setEditedPdfUrl('');
     setHighlightedAreas([]);
-    setAnalysisResults(null);
     setRecommendations([]);
 
     try {
-      // 1. Mostrar el PDF original
+      // // 1. Mostrar el PDF original
       const url = URL.createObjectURL(file);
       setPdfUrl(url);
 
       // 2. Procesar con Textract
-      const arrayBuffer = await file.arrayBuffer();
-      const response = await processWithTextract(arrayBuffer);
-      setAnalysisResults(response);
+      const response = await processPdf(file);
 
       // 3. Analizar contexto con Comprehend
       const textContext = extractTextForAnalysis(response);
@@ -84,39 +55,11 @@ const SmartPdfEditor = () => {
 
       // 4. Preparar áreas para resaltado
       prepareHighlightAreas(response);
-
     } catch (err) {
       console.error('Error al procesar PDF:', err);
-      setError(`Error: ${err.message}`);
     } finally {
       setIsProcessing(false);
     }
-  };
-
-  // Procesar con Amazon Textract
-  const processWithTextract = async (arrayBuffer) => {
-    const params = {
-      Document: { Bytes: new Uint8Array(arrayBuffer) },
-      FeatureTypes: awsConfig.textractConfig.featureTypes
-    };
-
-    const command = new AnalyzeDocumentCommand(params);
-    const response = await textractClient.current.send(command);
-    console.log('Respuesta de Textract:', response);
-    if (response.Blocks) {
-      const lines = response.Blocks.filter(block => block.BlockType === 'LINE');
-      console.log('Texto extraído:', lines.map(line => line.Text).join('\n'));
-    }
-    setOriginalPdf(arrayBuffer);
-    setPdfUrl(URL.createObjectURL(new Blob([arrayBuffer], { type: 'application/pdf' })));
-    setHighlightedAreas(lines.map(line => ({
-      text: line.Text,
-      boundingBox: line.Geometry.BoundingBox,
-      page: line.Page
-    })));
-    console.log('Áreas resaltadas:', lines);
-    // Aquí puedes guardar el PDF original en el estado o en otro lugar
-    return response;
   };
 
   // Analizar texto con Amazon Comprehend

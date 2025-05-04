@@ -27,8 +27,8 @@ function Dashboard() {
           options: {
             bucket:
               'amplify-d2yl9rekppsb0u-ma-amplifyteamdrivebucket28-h6ijgcetu7zf',
-          },
-        });
+            },
+          });
         console.log(`Archivo subido: ${fileName}`);
       }
     } catch (error) {
