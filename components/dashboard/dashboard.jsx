@@ -42,14 +42,7 @@ function Dashboard() {
     <>
       <div className='w-full flex flex-col min-h-screen'>
         
-        <div className='col-span-2'>
-          <h2 className='text-primary text-2xl font-bold tracking-tight'>
-            Subir Archivos
-          </h2>
-          <p className='text-muted-foreground mt-2'>
-            Sube tus archivos en formato .docx o .pdf
-          </p>
-        </div>
+        
         {files.length > 0 ? (
           <div className='col-span-2'>
             <h3 className='text-xl font-semibold mb-4'>

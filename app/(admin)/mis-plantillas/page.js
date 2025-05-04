@@ -285,7 +285,9 @@ function MisPlantillas() {
             <h1 className='text-2xl font-bold text-primary'>Mis plantillas</h1>
           </div>
           <div className='mb-4'>
-            <button className='px-4 py-2 bg-primary text-white rounded hover:bg-primary hover:opacity-90'>
+            <button className='px-4 py-2 bg-primary text-white rounded hover:bg-primary hover:opacity-90' onClick={() => {
+              window.location.href = '/crear-plantilla';
+            }}>
               Crear nueva plantilla
             </button>
           </div>
