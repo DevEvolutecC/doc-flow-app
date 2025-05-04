@@ -40,7 +40,7 @@ function Dashboard() {
 
   return (
     <>
-      <div className='w-full flex flex-col min-h-screen'>
+      <div className='w-full flex flex-col mb-5'>
         
         
         {files.length > 0 ? (

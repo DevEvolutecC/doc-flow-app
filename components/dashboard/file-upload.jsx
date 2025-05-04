@@ -80,7 +80,7 @@ export function FileUpload({ onUpload }) {
           onDrop={handleDrop}
         >
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary">
-            <Upload className="h-10 w-10 text-white-foreground" />
+            <Upload className="invert h-10 w-10 text-white-foreground" />
           </div>
           <h3 className="mt-4 text-lg font-semibold">Arrastra y suelta tus archivos</h3>
           <p className="mt-2 text-sm text-muted-foreground">o haz clic para seleccionar archivos</p>
@@ -101,7 +101,7 @@ export function FileUpload({ onUpload }) {
           {dragActive && (
             <div className="absolute inset-0 z-10 bg-background/80 flex items-center justify-center">
               <div className="rounded-lg border border-dashed border-primary p-12 flex flex-col items-center">
-                <Upload className="h-10 w-10 text-primary mb-2" />
+                <Upload className="fill-white h-10 w-10 text-primary mb-2" />
                 <p className="text-primary font-medium">Suelta los archivos aquí</p>
               </div>
             </div>
